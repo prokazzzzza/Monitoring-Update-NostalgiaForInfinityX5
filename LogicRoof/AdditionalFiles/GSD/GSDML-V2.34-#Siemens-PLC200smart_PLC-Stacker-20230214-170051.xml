@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ISO15745Profile xsi:schemaLocation="http://www.profibus.com/GSDML/2003/11/DeviceProfile ..\XSD\GSDML-DeviceProfile-V2.34.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.profibus.com/GSDML/2003/11/DeviceProfile">
+	<ProfileHeader>
+		<ProfileIdentification>PROFINET Device Profile</ProfileIdentification>
+		<ProfileRevision>1.00</ProfileRevision>
+		<ProfileName>Device Profile for PROFINET Devices</ProfileName>
+		<ProfileSource>PROFIBUS Nutzerorganisation e. V. (PNO)</ProfileSource>
+		<ProfileClassID>Device</ProfileClassID>
+		<ISO15745Reference>
+			<ISO15745Part>4</ISO15745Part>
+			<ISO15745Edition>1</ISO15745Edition>
+			<ProfileTechnology>GSDML</ProfileTechnology>
+		</ISO15745Reference>
+	</ProfileHeader>
+	<ProfileBody>
+		<DeviceIdentity VendorID="0x002A" DeviceID="0x0119">
+			<InfoText TextId="EmptyString"/>
+			<VendorName Value="SIEMENS"/>
+		</DeviceIdentity>
+		<DeviceFunction>
+			<Family MainFamily="PLCs" ProductFamily="CPU ST60"/>
+		</DeviceFunction>
+		<ApplicationProcess>
+			<DeviceAccessPointList>
+				<DeviceAccessPointItem ID="DAP1" ModuleIdentNumber="0x80000600" DNS_CompatibleName="plc-stacker" PhysicalSlots="1" FixedInSlots="1" DeviceAccessSupported="true" NumberOfDeviceAccessAR="1" ObjectUUID_LocalIndex="100" RequiredSchemaVersion="V2.32" MinDeviceInterval="128" MaxSupportedRecordSize="4068" NameOfStationNotTransferable="true" AddressAssignment="LOCAL" MultipleWriteSupported="true" LLDP_NoD_Supported="true" SharedDeviceSupported="false" CheckDeviceID_Allowed="true" ResetToFactoryModes="2" PNIO_Version="V2.33">
+					<ModuleInfo>
+						<Name TextId="DAP_Name_ID"/>
+						<InfoText TextId="DAP_Description_ID"/>
+						<OrderNumber Value="6ES7 288-1ST60-0AA0"/>
+						<SoftwareRelease Value="V02.05.00"/>
+					</ModuleInfo>
+					<CertificationInfo ConformanceClass="A" ApplicationClass="" NetloadClass="I"/>
+					<SubslotList>
+						<SubslotItem SubslotNumber="32768" TextId="Interface_SubslotLabel"/>
+						<SubslotItem SubslotNumber="32769" TextId="Port32769_SubslotLabel"/>
+					</SubslotList>
+					<IOConfigData MaxInputLength="11" MaxOutputLength="18" MaxDataLength="29"/>
+					<VirtualSubmoduleList>
+						<VirtualSubmoduleItem ID="VSM_1" SubmoduleIdentNumber="0x00000001" FixedInSubslots="1" MayIssueProcessAlarm="false" Writeable_IM_Records="1 2 3">
+							<IOData/>
+							<ModuleInfo>
+								<Name TextId="VSM_1_Name"/>
+								<InfoText TextId="VSM_1_Comment"/>
+							</ModuleInfo>
+						</VirtualSubmoduleItem>
+						<VirtualSubmoduleItem ID="VSM_2_1000" SubmoduleIdentNumber="0x1000000F" FixedInSubslots="1000" MayIssueProcessAlarm="false">
+							<IOData>
+								<Output>
+									<DataItem Length="15" DataType="OctetString" TextId="VSM_2_1000"/>
+								</Output>
+							</IOData>
+							<ModuleInfo>
+								<Name TextId="VSM_2_1000_Name"/>
+								<InfoText TextId="VSM_2_1000_Comment"/>
+							</ModuleInfo>
+						</VirtualSubmoduleItem>
+						<VirtualSubmoduleItem ID="VSM_2_1001" SubmoduleIdentNumber="0x20000008" FixedInSubslots="1001" MayIssueProcessAlarm="false">
+							<IOData>
+								<Input>
+									<DataItem Length="8" DataType="OctetString" TextId="VSM_2_1001"/>
+								</Input>
+							</IOData>
+							<ModuleInfo>
+								<Name TextId="VSM_2_1001_Name"/>
+								<InfoText TextId="VSM_2_1001_Comment"/>
+							</ModuleInfo>
+						</VirtualSubmoduleItem>
+					</VirtualSubmoduleList>
+					<SystemDefinedSubmoduleList>
+						<InterfaceSubmoduleItem ID="Interface" SubslotNumber="32768" SubmoduleIdentNumber="0xf00" TextId="Interface" ParameterizationDisallowed="true" SupportedProtocols="LLDP" PTP_BoundarySupported="true" DCP_BoundarySupported="true" SupportedRT_Classes="RT_CLASS_1">
+							<ApplicationRelations StartupMode="Advanced;Legacy" NumberOfAR="1">
+								<TimingProperties SendClock="32" ReductionRatio="1 2 4 8 16 32 64 128 256 512" ReductionRatioPow2="1 2 4 8 16 32 64 128 256 512"/>
+							</ApplicationRelations>
+						</InterfaceSubmoduleItem>
+						<PortSubmoduleItem ID="Port_1" TextId="Port_1" SubslotNumber="32769" SubmoduleIdentNumber="0xf01" ParameterizationDisallowed="true" PortDeactivationSupported="false" MAUTypes="16" CheckMAUTypeSupported="true" CheckMAUTypeDifferenceSupported="true">
+							<MAUTypeList>
+								<MAUTypeItem Value="16" AdjustSupported="true"/>
+							</MAUTypeList>
+						</PortSubmoduleItem>
+					</SystemDefinedSubmoduleList>
+					<Graphics>
+						<GraphicItemRef Type="DeviceSymbol" GraphicItemTarget="1"/>
+					</Graphics>
+				</DeviceAccessPointItem>
+			</DeviceAccessPointList>
+			<ValueList>
+				<ValueItem ID="IDV_UDIAG1">
+					<Assignments>
+						<Assign Content="1" TextId="IDT_UDIAG1_1"/>
+					</Assignments>
+				</ValueItem>
+			</ValueList>
+			<UnitDiagTypeList>
+				<UnitDiagTypeItem UserStructureIdentifier="1">
+					<Name TextId="IDT_UDIAG1"/>
+					<Ref ValueItemTarget="IDV_UDIAG1" TextId="IDT_RunningStatus" ByteOffset="0" DataType="Unsigned8" DefaultValue="1"/>
+				</UnitDiagTypeItem>
+			</UnitDiagTypeList>
+			<GraphicsList>
+				<GraphicItem ID="1" GraphicFile="GSDML-002A-0119-200SMART"/>
+			</GraphicsList>
+			<ExternalTextList>
+				<PrimaryLanguage>
+					<Text TextId="EmptyString" Value=""/>
+					<Text TextId="Interface_SubslotLabel" Value="X1"/>
+					<Text TextId="Port32769_SubslotLabel" Value="Port1"/>
+					<Text TextId="DAP_Name_ID" Value="PLC-Stacker"/>
+					<Text TextId="DAP_Description_ID" Value="PLC 200 SMART CPU ST60(DC/DC/DC); 用户程序大小:30 KB; 用户数据大小:20 KB; 最大保持存储区:10 KB; 36输入/24输出; 6个(全部)高速计数器和3个高速脉冲输出; 支持最大1个信号版扩展和6个信号模块扩展;支持PROFINET(RT、智能设备); 支持HMI; PLC间通讯;"/>
+					<Text TextId="Interface" Value="Interface"/>
+					<Text TextId="Port_1" Value="Port 1"/>
+					<Text TextId="IDT_UDIAG1" Value="Running status:"/>
+					<Text TextId="IDT_RunningStatus" Value="Device is running"/>
+					<Text TextId="IDT_UDIAG1_1" Value="with error"/>
+					<Text TextId="VSM_1_Name" Value="PLC-Stacker Virtual submodule"/>
+					<Text TextId="VSM_1_Comment" Value="PLC 200 SMART CPU ST60(DC/DC/DC); 用户程序大小:30 KB; 用户数据大小:20 KB; 最大保持存储区:10 KB; 36输入/24输出; 6个(全部)高速计数器和3个高速脉冲输出; 支持最大1个信号版扩展和6个信号模块扩展;支持PROFINET(RT、智能设备); 支持HMI; PLC间通讯;"/>
+					<Text TextId="VSM_2_1000_Name" Value="传送区01"/>
+					<Text TextId="VSM_2_1000_Comment" Value=""/>
+					<Text TextId="VSM_2_1000" Value="传送区01"/>
+					<Text TextId="VSM_2_1001_Name" Value="传送区02"/>
+					<Text TextId="VSM_2_1001_Comment" Value=""/>
+					<Text TextId="VSM_2_1001" Value="传送区02"/>
+				</PrimaryLanguage>
+				<Language xml:lang="zh">
+					<Text TextId="EmptyString" Value=""/>
+					<Text TextId="Interface_SubslotLabel" Value="X1"/>
+					<Text TextId="Port32769_SubslotLabel" Value="端口1"/>
+					<Text TextId="DAP_Name_ID" Value="PLC-Stacker"/>
+					<Text TextId="DAP_Description_ID" Value="PLC 200 SMART CPU ST60(DC/DC/DC); 用户程序大小:30 KB; 用户数据大小:20 KB; 最大保持存储区:10 KB; 36输入/24输出; 6个(全部)高速计数器和3个高速脉冲输出; 支持最大1个信号版扩展和6个信号模块扩展;支持PROFINET(RT、智能设备); 支持HMI; PLC间通讯;"/>
+					<Text TextId="Interface" Value="接口"/>
+					<Text TextId="Port_1" Value="端口1"/>
+					<Text TextId="IDT_UDIAG1" Value="运行状态:"/>
+					<Text TextId="IDT_RunningStatus" Value="设备运行"/>
+					<Text TextId="IDT_UDIAG1_1" Value="错误"/>
+					<Text TextId="VSM_1_Name" Value="PLC-Stacker虚拟子模块"/>
+					<Text TextId="VSM_1_Comment" Value="PLC 200 SMART CPU ST60(DC/DC/DC); 用户程序大小:30 KB; 用户数据大小:20 KB; 最大保持存储区:10 KB; 36输入/24输出; 6个(全部)高速计数器和3个高速脉冲输出; 支持最大1个信号版扩展和6个信号模块扩展;支持PROFINET(RT、智能设备); 支持HMI; PLC间通讯;"/>
+					<Text TextId="VSM_2_1000_Name" Value="传送区01"/>
+					<Text TextId="VSM_2_1000_Comment" Value=""/>
+					<Text TextId="VSM_2_1000" Value="传送区01"/>
+					<Text TextId="VSM_2_1001_Name" Value="传送区02"/>
+					<Text TextId="VSM_2_1001_Comment" Value=""/>
+					<Text TextId="VSM_2_1001" Value="传送区02"/>
+				</Language>
+			</ExternalTextList>
+		</ApplicationProcess>
+	</ProfileBody>
+</ISO15745Profile>
