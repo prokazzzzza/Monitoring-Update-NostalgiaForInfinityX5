@@ -1,0 +1,57 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\GIT_Project\\Parsing_bot_grinding\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{1199FEE0-335C-413B-B225-7EA1218FCABA}|Parsing_bot_grinding.pyproj|D:\\GIT_Project\\Parsing_bot_grinding\\Parsing_bot_grinding.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{1199FEE0-335C-413B-B225-7EA1218FCABA}|Parsing_bot_grinding.pyproj|solutionrelative:Parsing_bot_grinding.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:11:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:12:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{08a1bf1d-7967-4afc-8253-1790862ab8c9}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Parsing_bot_grinding.py",
+              "DocumentMoniker": "D:\\GIT_Project\\Parsing_bot_grinding\\Parsing_bot_grinding.py",
+              "RelativeDocumentMoniker": "Parsing_bot_grinding.py",
+              "ToolTip": "D:\\GIT_Project\\Parsing_bot_grinding\\Parsing_bot_grinding.py",
+              "RelativeToolTip": "Parsing_bot_grinding.py",
+              "ViewState": "AgIAAFMAAAAAAAAAAAAUwGYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2024-11-14T17:32:13.371Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
