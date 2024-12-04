@@ -11,10 +11,10 @@ services:
     restart: always
     env_file:
       - .env  # Указываем, что нужно использовать файл .env
-    volumes:
+    c:
       - ${LOCAL_VOLUME_PATH}:/app/Update  # Используем переменную среды для локального пути
       - ./MonitoringForUpdateStratagiaRU.py:/app/MonitoringForUpdateStratagiaRU.py
-      - ./MonitoringForUpdateStratagiaEN.py:/app/MonitoringForUpdateStratagiaEN.py
+      - ./MonitoringForUpdateStratagiaENG.py:/app/MonitoringForUpdateStratagiaENG.py
     ports:
       - "8000:8000"  # Пример проброса порта (если необходимо)
     logging:
