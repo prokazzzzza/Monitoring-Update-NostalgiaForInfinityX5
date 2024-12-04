@@ -1,9 +1,5 @@
-# gitignore template for TwinCAT3
-# website: https://www.beckhoff.com/twincat3/
-#
 # Recommended: VisualStudio.gitignore
 
-# TwinCAT files
 *.tpy
 *.tclrs
 *.compiled-library
