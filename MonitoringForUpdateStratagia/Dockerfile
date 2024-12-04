@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Копируем нужный скрипт в зависимости от переменной окружения LANGUAGE
-ARG LANGUAGE
+ARG LANGUAGE 
 COPY MonitoringForUpdateStratagia$LANGUAGE.py /app/MonitoringForUpdateStratagia.py
 
 # Команда для запуска бота
