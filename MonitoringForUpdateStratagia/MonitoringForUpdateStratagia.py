@@ -24,7 +24,6 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 FREQTRADE_BOT_TOKEN = os.getenv("FREQTRADE_BOT_TOKEN")
 FREQTRADE_CHAT_ID = os.getenv("CHAT_ID")
-
 FILE_URL = os.getenv("FILE_URL")
 LOCAL_FILE_PATH = os.getenv("LOCAL_FILE_PATH")
 CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL"))
@@ -336,7 +335,6 @@ async def start(update: Update, context: CallbackContext):
 
     if update.message:
         await update.message.reply_text(start_message, reply_markup=reply_markup)
-
 
 def main():
     """Основная функция для запуска бота и периодической проверки обновлений."""
