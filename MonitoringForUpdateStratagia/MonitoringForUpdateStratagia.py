@@ -1,16 +1,16 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackContext, CallbackQueryHandler
-import os
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
 import requests
 import hashlib
-import time
-import re
-from dotenv import load_dotenv
 import logging
 import aiohttp
 import asyncio
 import pytz
-from datetime import datetime, timedelta
+import time
+import re
+import os
 
 # Настроим логирование
 logging.basicConfig(level=logging.INFO)
@@ -19,20 +19,21 @@ logger = logging.getLogger(__name__)
 # Загружаем переменные окружения из .env
 load_dotenv()
 
-# Настройки
+# Конфигурация из файла .env
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 FREQTRADE_BOT_TOKEN = os.getenv("FREQTRADE_BOT_TOKEN")
-FREQTRADE_CHAT_ID = os.getenv("FREQTRADE_CHAT_ID")
+FREQTRADE_CHAT_ID = os.getenv("CHAT_ID")
 
 FILE_URL = os.getenv("FILE_URL")
 LOCAL_FILE_PATH = os.getenv("LOCAL_FILE_PATH")
 CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL"))
+LINE_NUMBER = int(os.getenv("LINE_NUMBER"))
 RETRY_LIMIT = int(os.getenv("RETRY_LIMIT"))
 RETRY_DELAY = int(os.getenv("RETRY_DELAY"))
 REPO_URL = os.getenv("REPO_URL")
 REMOTE_FILE_PATH = os.getenv("REMOTE_FILE_PATH")
-TIMEZONE = os.getenv("TIMEZONE")  # Получаем часовой пояс из .env
+TIMEZONE = os.getenv("TIMEZONE")
 
 # Логирование входящих сообщений
 async def log_telegram_message(update: Update):
@@ -121,7 +122,7 @@ def extract_version_from_content(content):
         return "Ошибка извлечения"
 
 # Извлекаем версию локального файла
-def extract_version_from_line(file_path, line_number=69):
+def extract_version_from_line(file_path, line_number=LINE_NUMBER):
     """Извлекает версию файла из указанной строки."""
     if not os.path.exists(file_path):
         return "Файл не найден"
@@ -157,7 +158,7 @@ async def check_for_updates():
     if local_version != remote_version:
         # Если версии не совпадают, загружаем новый файл
         await download_file_with_retries(FILE_URL, LOCAL_FILE_PATH)
-        message = f"✅ Обновление обнаружено! Новая версия: {remote_version} успешно загружена.\n\nПерезапускаем Freqtrade..."
+        message = f"✅ Обновление обнаружено! Новая версия: {remote_version} успешно загружена.\n\n Перезапускаем Freqtrade..."
         send_telegram_message(TELEGRAM_TOKEN, CHAT_ID, message)
         logger.info(f"Обновление загружено. Локальная версия теперь: {remote_version}")
 
@@ -240,7 +241,7 @@ async def download_file(update: Update, context: CallbackContext):
         local_version = extract_version_from_line(LOCAL_FILE_PATH)
         
         # Получаем версию файла с сервера
-        await download_file_with_retries(FILE_URL, LOCAL_FILE_PATH, retries=1, delay=0)  # Асинхронная загрузка файла
+        await download_file_with_retries(FILE_URL, LOCAL_FILE_PATH, retries=1, delay=0) 
         server_version = extract_version_from_line(LOCAL_FILE_PATH)
         
         if local_version == server_version:
@@ -251,7 +252,7 @@ async def download_file(update: Update, context: CallbackContext):
             logger.info("Обновление не требуется. Версия актуальна.")
         else:
             # Если версии разные, загружаем новую версию
-            await download_file_with_retries(FILE_URL, LOCAL_FILE_PATH)  # Асинхронная загрузка файла
+            await download_file_with_retries(FILE_URL, LOCAL_FILE_PATH)
             message = f"✅  Новая версия ({server_version}) успешно загружена!"
             if update.callback_query:  # Проверяем, существует ли callback_query
                 await update.callback_query.message.reply_text(message)
