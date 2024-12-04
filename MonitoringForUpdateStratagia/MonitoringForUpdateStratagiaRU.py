@@ -3,12 +3,10 @@ from telegram.ext import Application, CommandHandler, CallbackContext, CallbackQ
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import requests
-import hashlib
 import logging
 import aiohttp
 import asyncio
 import pytz
-import time
 import re
 import os
 
@@ -20,19 +18,19 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Конфигурация из файла .env
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
-FREQTRADE_BOT_TOKEN = os.getenv("FREQTRADE_BOT_TOKEN")
-FREQTRADE_CHAT_ID = os.getenv("CHAT_ID")
-FILE_URL = os.getenv("FILE_URL")
-LOCAL_FILE_PATH = os.getenv("LOCAL_FILE_PATH")
-CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL"))
-LINE_NUMBER = int(os.getenv("LINE_NUMBER"))
-RETRY_LIMIT = int(os.getenv("RETRY_LIMIT"))
-RETRY_DELAY = int(os.getenv("RETRY_DELAY"))
-REPO_URL = os.getenv("REPO_URL")
-REMOTE_FILE_PATH = os.getenv("REMOTE_FILE_PATH")
-TIMEZONE = os.getenv("TIMEZONE")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")  # Токен Telegram-бота
+CHAT_ID = os.getenv("CHAT_ID")  # ID чата для отправки сообщений
+FREQTRADE_BOT_TOKEN = os.getenv("FREQTRADE_BOT_TOKEN")  # Токен бота Freqtrade
+FREQTRADE_CHAT_ID = os.getenv("CHAT_ID")  # ID чата для Freqtrade
+FILE_URL = os.getenv("FILE_URL")  # URL для скачивания файла
+LOCAL_FILE_PATH = os.getenv("LOCAL_FILE_PATH")  # Локальный путь файла
+CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL"))  # Интервал проверки обновлений
+LINE_NUMBER = int(os.getenv("LINE_NUMBER"))  # Номер строки для извлечения версии
+RETRY_LIMIT = int(os.getenv("RETRY_LIMIT"))  # Лимит попыток при скачивании
+RETRY_DELAY = int(os.getenv("RETRY_DELAY"))  # Задержка между попытками
+REPO_URL = os.getenv("REPO_URL")  # URL репозитория GitHub
+REMOTE_FILE_PATH = os.getenv("REMOTE_FILE_PATH")  # Путь к файлу в репозитории
+TIMEZONE = os.getenv("TIMEZONE")  # Часовой пояс
 
 # Логирование входящих сообщений
 async def log_telegram_message(update: Update):

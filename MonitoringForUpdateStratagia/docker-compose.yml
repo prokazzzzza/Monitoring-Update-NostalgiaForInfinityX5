@@ -5,13 +5,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        LANGUAGE: ${LANGUAGE}  # Передаем переменную LANGUAGE
     container_name: monitoringforupdate-nostalgiaforinfinityx5-container
     restart: always
     env_file:
       - .env  # Указываем, что нужно использовать файл .env
     volumes:
       - ${LOCAL_VOLUME_PATH}:/app/Update  # Используем переменную среды для локального пути
-      - ./MonitoringForUpdateStratagia.py:/app/MonitoringForUpdateStratagia.py  # Монтируем ваш скрипт
+      - ./MonitoringForUpdateStratagiaRU.py:/app/MonitoringForUpdateStratagiaRU.py
+      - ./MonitoringForUpdateStratagiaEN.py:/app/MonitoringForUpdateStratagiaEN.py
     ports:
       - "8000:8000"  # Пример проброса порта (если необходимо)
     logging:
