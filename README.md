@@ -32,11 +32,11 @@ mv Example.env .env
 
 ### 2. В корне проекта выполните команду для сборки Docker-образа:
 ```bash
-docker build -t monitoring-update-nostalgia .
+docker compose build
 ```
 ### 3. Запустите Docker-контейнер:
 ```bash
-docker run --env-file .env monitoring-update-nostalgia
+docker compose up
 ```
 # 📁 Структура проекта
 Проект состоит из нескольких файлов и папок, важные из которых:
