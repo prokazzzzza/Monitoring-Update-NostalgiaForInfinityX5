@@ -3,8 +3,8 @@
 Этот проект предназначен для мониторинга обновлений стратегии в репозитории GitHub https://github.com/iterativv/NostalgiaForInfinity автоматического обновления при появлении новой версии и отправки уведомлений через Telegram, а также перезапуск Freqtrade после скачивания новой версии или в ручном режиме через бота.
 
 ---
-[![photo_2024-12-04_17-36-09.jpg](https://s.iimg.su/s/04/th_2Gm2kxzvQvCAL4eksNXSvUAue3GcKsQdQxFL7Pdq.jpg)](https://iimg.su/i/YNlCg)
 [![photo_2024-12-05_15-49-24.jpg](https://s.iimg.su/s/05/th_zbEt9VNsNi9S96vHIKyZEdLFWDWeYh2D4SlTpNT4.jpg)](https://iimg.su/i/xv8Sb)
+[![photo_2024-12-05_15-52-03.jpg](https://s.iimg.su/s/05/th_kzVXPzWDC2ZzZcOsUx5RvWq1E0NeCct092KG9yEi.jpg)](https://iimg.su/i/gTKN9)
 
 [![photo_2024-12-04_17-36-14.jpg](https://s.iimg.su/s/04/th_uVfvFd9iFf4NHCri4sODIlPaW0YUBjUoomyooZKz.jpg)](https://iimg.su/i/UjZpV)
 
