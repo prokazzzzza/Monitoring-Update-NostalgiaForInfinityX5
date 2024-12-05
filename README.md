@@ -4,6 +4,7 @@
 
 ---
 [![photo_2024-12-04_17-36-09.jpg](https://s.iimg.su/s/04/th_2Gm2kxzvQvCAL4eksNXSvUAue3GcKsQdQxFL7Pdq.jpg)](https://iimg.su/i/YNlCg)
+[![photo_2024-12-05_15-10-19.jpg](https://s.iimg.su/s/05/th_0fr75JzasGwnMkZWoCMzVwKN3ADhVjHLJVEZ0Emy.jpg)](https://iimg.su/i/WM10p)
 
 [![photo_2024-12-04_17-36-14.jpg](https://s.iimg.su/s/04/th_uVfvFd9iFf4NHCri4sODIlPaW0YUBjUoomyooZKz.jpg)](https://iimg.su/i/UjZpV)
 
