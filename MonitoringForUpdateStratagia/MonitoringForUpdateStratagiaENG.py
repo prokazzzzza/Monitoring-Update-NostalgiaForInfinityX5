@@ -204,29 +204,77 @@ async def check_version(update: Update, context: CallbackContext):
     if update.callback_query:
         await update.callback_query.message.reply_text(message)
 
-# Button handler "📜 Latest commits"
+# Handler for the "📜 Latest Commits" button
 async def check_commits(update: Update, context: CallbackContext):
     """Check commits in the GitHub repository."""
-    logger.info("Handling 'Check latest commits' button.")
+    logger.info("Processing the 'Check Latest Commits' button.")
     commits = await get_commits_from_github(REPO_URL)
-    commits_message = "\n".join(commits)
+    
+    # If commits were retrieved
+    if commits:
+        # Extract the header with the date and the commits
+        header = commits[0]
+        commits_message = "\n".join(commits[1:])
+        commits_message = f"{header}\n{commits_message}"
+    else:
+        commits_message = "No commits for this period."
+    
     if update.callback_query:  # Check if callback_query exists
-        logger.info(f"Sending message: Latest commits:\n{commits_message}")
-        await update.callback_query.message.reply_text(f"Latest commits:\n{commits_message}")
+        logger.info(f"Sending message: {commits_message}")
+        await update.callback_query.message.reply_text(commits_message)
 
-# Get latest commits from GitHub
+
 async def get_commits_from_github(repo_url):
-    """Gets the latest commits from a GitHub repository."""
-    api_url = f"https://api.github.com/repos/{repo_url}/commits?per_page=5"
+    """Get commits from the GitHub repository made on the latest date when they were pushed."""
+    
+    # Construct the URL for the GitHub API request
+    api_url = f"https://api.github.com/repos/{repo_url}/commits?per_page=100"  # Fetch 100 commits for analysis
+    
     async with aiohttp.ClientSession() as session:
         try:
+            # Send the request to GitHub API
             async with session.get(api_url) as response:
-                response.raise_for_status()
-                commits = await response.json()
-                return [f"Commit: {commit['sha']} - {commit['commit']['message']}" for commit in commits]
+                response.raise_for_status()  # Check for successful response status
+                
+                commits = await response.json()  # Parse the JSON response
+                
+                if not commits:
+                    return ["No commits in the repository."]
+                
+                # Sort commits by date in descending order
+                commits.sort(key=lambda x: x['commit']['author']['date'], reverse=True)
+                
+                # Get the date of the latest commit
+                last_commit_date = datetime.fromisoformat(commits[0]['commit']['author']['date'].replace('Z', '+00:00')).date()
+                
+                # Extract only those commits made on the last day
+                filtered_commits = [
+                    commit for commit in commits
+                    if datetime.fromisoformat(commit['commit']['author']['date'].replace('Z', '+00:00')).date() == last_commit_date
+                ]
+                
+                # Format the commit list with only the time in the specified timezone
+                tz = pytz.timezone(TIMEZONE)  # Get the timezone from the environment variable
+                commit_list = [
+                    f"{commit['sha'][:7]} {commit['commit']['message']} at {datetime.fromisoformat(commit['commit']['author']['date'].replace('Z', '+00:00')).astimezone(tz).strftime('%H:%M:%S')}" 
+                    for commit in filtered_commits
+                ]
+                
+                if not commit_list:
+                    return [f"No commits on {last_commit_date}."]
+
+                # Header with emoji and date
+                header = f"📜 Latest Commits from {last_commit_date}"
+                
+                # Return the header and the list of commits
+                return [header] + commit_list
+        
+        except aiohttp.ClientError as e:
+            logger.error(f"Error while requesting GitHub API: {e}")
+            return ["Error while retrieving commits."]
         except Exception as e:
-            logger.error(f"Error fetching commits: {e}")
-            return ["Failed to get commit data."]
+            logger.error(f"Unknown error: {e}")
+            return ["Failed to retrieve commit data."]
 
 # Asynchronous file download from the server
 async def download_file(update: Update, context: CallbackContext):
