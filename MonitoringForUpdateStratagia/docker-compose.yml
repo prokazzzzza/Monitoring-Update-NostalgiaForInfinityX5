@@ -3,22 +3,22 @@ version: '3.8'
 services:
   monitoringforupdate-nostalgiaforinfinityx5:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: .  # Указываем текущую директорию для сборки Docker-образа / Specify the current directory for building the Docker image
+      dockerfile: Dockerfile  # Используем Dockerfile в корне проекта / Use the Dockerfile located in the project root
       args:
-        LANGUAGE: ${LANGUAGE}  # Передаем переменную LANGUAGE
-    container_name: monitoringforupdate-nostalgiaforinfinityx5-container
-    restart: always
+        LANGUAGE: ${LANGUAGE}  # Передаем переменную LANGUAGE из .env файла / Pass the LANGUAGE variable from the .env file
+    container_name: monitoringforupdate-nostalgiaforinfinityx5-container  # Имя контейнера / Container name
+    restart: always  # Автоматически перезапускать контейнер при сбое / Automatically restart the container in case of a crash
     env_file:
-      - .env  # Указываем, что нужно использовать файл .env
+      - .env  # Указываем файл с переменными окружения / Specify the file with environment variables
     volumes:
-      - ${LOCAL_VOLUME_PATH}:/app/Update  # Используем переменную среды для локального пути
-      - ./MonitoringForUpdateStratagiaRU.py:/app/MonitoringForUpdateStratagiaRU.py
-      - ./MonitoringForUpdateStratagiaENG.py:/app/MonitoringForUpdateStratagiaENG.py
+      - ${LOCAL_VOLUME_PATH}:/app/Update  # Монтируем локальную директорию в контейнер / Mount a local directory to the container
+      - ./MonitoringForUpdateStratagiaRU.py:/app/MonitoringForUpdateStratagiaRU.py  # Добавляем скрипт на русском языке / Add the Russian script
+      - ./MonitoringForUpdateStratagiaENG.py:/app/MonitoringForUpdateStratagiaENG.py  # Добавляем скрипт на английском языке / Add the English script
     ports:
-      - "8000:8000"  # Пример проброса порта (если необходимо)
+      - "8000:8000"  # Пробрасываем порт 8000 (если требуется доступ извне) / Map port 8000 (if external access is required)
     logging:
-      driver: "json-file"  # Логирование в json
+      driver: "json-file"  # Используем JSON-драйвер для логирования / Use JSON driver for logging
       options:
-        max-size: "10m"      # Максимальный размер файла лога
-        max-file: "3"        # Количество логов (файлов)
+        max-size: "10m"  # Максимальный размер одного файла лога / Maximum size of a single log file
+        max-file: "3"    # Ограничение количества файлов лога / Limit the number of log files
