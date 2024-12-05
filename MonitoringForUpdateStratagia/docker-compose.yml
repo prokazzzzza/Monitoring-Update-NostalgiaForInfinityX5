@@ -11,7 +11,7 @@ services:
     restart: always
     env_file:
       - .env  # Указываем, что нужно использовать файл .env
-    c:
+    volumes:
       - ${LOCAL_VOLUME_PATH}:/app/Update  # Используем переменную среды для локального пути
       - ./MonitoringForUpdateStratagiaRU.py:/app/MonitoringForUpdateStratagiaRU.py
       - ./MonitoringForUpdateStratagiaENG.py:/app/MonitoringForUpdateStratagiaENG.py
