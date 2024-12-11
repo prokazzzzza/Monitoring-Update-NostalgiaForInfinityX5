@@ -31,6 +31,9 @@ REPO_URL = os.getenv("REPO_URL")  # GitHub repository URL
 REMOTE_FILE_PATH = os.getenv("REMOTE_FILE_PATH")  # Path to the file in the repository
 TIMEZONE = os.getenv("TIMEZONE")  # Timezone
 
+# Version bot
+BOT_VERSION = "v1.15"
+
 # Logging incoming messages
 async def log_telegram_message(update: Update):
     """Logs incoming messages in Telegram."""
@@ -362,6 +365,7 @@ async def start(update: Update, context: CallbackContext):
     # Form the welcome message
     start_message = (
         "🤖 Welcome!\n"
+        f"Telegram bot version: {BOT_VERSION}\n"
         "This bot is designed for monitoring updates of the NostalgiaForInfinityX5 strategy.\n\n"
         f"📊  Initial Information:\n"
         f"📂  Local file version: {local_version}\n"
