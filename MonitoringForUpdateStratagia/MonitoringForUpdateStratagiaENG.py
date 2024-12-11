@@ -25,7 +25,6 @@ FREQTRADE_CHAT_ID = os.getenv("CHAT_ID")  # Chat ID for Freqtrade
 FILE_URL = os.getenv("FILE_URL")  # URL for downloading the file
 LOCAL_FILE_PATH = os.getenv("LOCAL_FILE_PATH")  # Local file path
 CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL"))  # Update check interval
-LINE_NUMBER = int(os.getenv("LINE_NUMBER"))  # Line number for extracting version
 RETRY_LIMIT = int(os.getenv("RETRY_LIMIT"))  # Retry limit for downloading
 RETRY_DELAY = int(os.getenv("RETRY_DELAY"))  # Delay between retries
 REPO_URL = os.getenv("REPO_URL")  # GitHub repository URL
@@ -118,17 +117,15 @@ def extract_version_from_content(content):
         return "Version extraction error"
 
 # Extract the version from the local file
-def extract_version_from_line(file_path, line_number=LINE_NUMBER):
-    """Extracts the version from the specified line of the file."""
+def extract_version_from_file(file_path):
+    """Checks the file content for a version."""
     if not os.path.exists(file_path):
         return "File not found"
     try:
         with open(file_path, "r", encoding="utf-8") as file:
-            lines = file.readlines()
-            if len(lines) >= line_number:
-                line = lines[line_number - 1].strip()  # Get the 69th line
-                match = re.search(r'return\s+[\'\"](v[\d.]+)[\'\"]', line)
-                return match.group(1) if match else "Unknown version"
+            content = file.read()
+            match = re.search(r'return\s+[\'\"](v[\d.]+)[\'\"]', content)
+            return match.group(1) if match else "Unknown version"
     except Exception as e:
         logger.error(f"Error extracting version: {e}")
     return "Unknown version"
@@ -148,18 +145,27 @@ async def check_remote_version():
 # Function to download the file and notify with a restart
 async def check_for_updates():
     """Checks for updates on the remote server and downloads the file if an update is found."""
-    local_version = extract_version_from_line(LOCAL_FILE_PATH)
+    local_version = extract_version_from_file(LOCAL_FILE_PATH)
     remote_version = await check_remote_version()
 
+    if remote_version == "Unknown version":
+        logger.warning("Remote version is unknown. Update will not be performed.")
+        send_telegram_message(TELEGRAM_TOKEN, CHAT_ID, "⚠️ Remote version is unknown. Please check the file manually.")
+        return
+    if local_version == "Unknown version":
+        logger.warning("Local version is unknown. Update will not be performed.")
+        send_telegram_message(TELEGRAM_TOKEN, CHAT_ID, "⚠️ Local version is unknown. Please check the file manually.")
+        return
+
     if local_version != remote_version:
-        # If the versions don't match, download the new file
+        # If versions don't match, download the new file
         await download_file_with_retries(FILE_URL, LOCAL_FILE_PATH)
-        message = f"✅ Update found! New version: {remote_version} successfully downloaded.\n\n Restarting Freqtrade..."
+        message = f"✅ Update found! New version: {remote_version} has been successfully downloaded.\n\n Restarting Freqtrade..."
         send_telegram_message(TELEGRAM_TOKEN, CHAT_ID, message)
         logger.info(f"Update downloaded. Local version is now: {remote_version}")
 
         # After downloading the file, restart Freqtrade
-        await reload_freqtrade(None, None)  # Empty values are passed if no specific update is required through Telegram
+        await reload_freqtrade(None, None)  # Empty values are passed here if no specific update is required via Telegram
     else:
         logger.info(f"No updates found. Local version: {local_version}")
 
@@ -184,7 +190,7 @@ async def check_version(update: Update, context: CallbackContext):
     logger.info("Handling 'Check version' button.")
 
     # Get the version of the local file
-    local_version = extract_version_from_line(LOCAL_FILE_PATH)
+    local_version = extract_version_from_file(LOCAL_FILE_PATH)
     logger.info(f"Local version: {local_version}")
 
     # Get the version of the remote file
@@ -197,8 +203,8 @@ async def check_version(update: Update, context: CallbackContext):
         version_status = f"📥  New version found on GitHub: {remote_version}"
 
     # Format the message
-    message = f"Local file version: {local_version}\n" \
-              f"Version on server (GitHub): {remote_version}\n" \
+    message = f"🗂️ Local file version: {local_version}\n" \
+              f"🌐 Version on server (GitHub): {remote_version}\n" \
               f"{version_status}"
 
     if update.callback_query:
@@ -225,56 +231,57 @@ async def check_commits(update: Update, context: CallbackContext):
 
 
 async def get_commits_from_github(repo_url):
-    """Get commits from the GitHub repository made on the latest date when they were pushed."""
-    
-    # Construct the URL for the GitHub API request
-    api_url = f"https://api.github.com/repos/{repo_url}/commits?per_page=100"  # Fetch 100 commits for analysis
-    
+    """Gets commits from a GitHub repository made on the last date they were pushed."""
+
+    # Form the URL for the GitHub API request
+    api_url = f"https://api.github.com/repos/{repo_url}/commits?per_page=100"  # Get 100 commits for analysis
+
     async with aiohttp.ClientSession() as session:
         try:
-            # Send the request to GitHub API
+            # Send the request to the GitHub API
             async with session.get(api_url) as response:
                 response.raise_for_status()  # Check for successful response status
-                
+
                 commits = await response.json()  # Parse the JSON response
-                
+
                 if not commits:
                     return ["No commits in the repository."]
-                
+
                 # Sort commits by date in descending order
                 commits.sort(key=lambda x: x['commit']['author']['date'], reverse=True)
-                
-                # Get the date of the latest commit
+
+                # Get the date of the last commit
                 last_commit_date = datetime.fromisoformat(commits[0]['commit']['author']['date'].replace('Z', '+00:00')).date()
-                
-                # Extract only those commits made on the last day
+
+                # Extract only the commits made on the last day
                 filtered_commits = [
                     commit for commit in commits
                     if datetime.fromisoformat(commit['commit']['author']['date'].replace('Z', '+00:00')).date() == last_commit_date
                 ]
-                
-                # Format the commit list with only the time in the specified timezone
-                tz = pytz.timezone(TIMEZONE)  # Get the timezone from the environment variable
+
+                # Create a list of commits with the necessary information
+                tz = pytz.timezone(TIMEZONE)
                 commit_list = [
-                    f"{commit['sha'][:7]} {commit['commit']['message']} at {datetime.fromisoformat(commit['commit']['author']['date'].replace('Z', '+00:00')).astimezone(tz).strftime('%H:%M:%S')}" 
+                    f"{commit['sha'][:7]} {commit['commit']['message']} at {datetime.fromisoformat(commit['commit']['author']['date'].replace('Z', '+00:00')).astimezone(tz).strftime('%H:%M:%S')}"
                     for commit in filtered_commits
                 ]
-                
+
                 if not commit_list:
                     return [f"No commits on {last_commit_date}."]
 
-                # Header with emoji and date
-                header = f"📜 Latest Commits from {last_commit_date}"
-                
+                # Header with emoji, date, and number of commits
+                header = f"📜 Latest commits from {last_commit_date} ({len(filtered_commits)} commits)"
+
                 # Return the header and the list of commits
                 return [header] + commit_list
-        
+
         except aiohttp.ClientError as e:
-            logger.error(f"Error while requesting GitHub API: {e}")
-            return ["Error while retrieving commits."]
+            logger.error(f"Error with GitHub API request: {e}")
+            return ["Error fetching commits."]
         except Exception as e:
             logger.error(f"Unknown error: {e}")
-            return ["Failed to retrieve commit data."]
+            return ["Failed to fetch commit data."]
+
 
 # Asynchronous file download from the server
 async def download_file(update: Update, context: CallbackContext):
@@ -282,15 +289,15 @@ async def download_file(update: Update, context: CallbackContext):
     logger.info("Handling 'Download update' button.")
     try:
         # Get the version of the local file
-        local_version = extract_version_from_line(LOCAL_FILE_PATH)
+        local_version = extract_version_from_file(LOCAL_FILE_PATH)
         
         # Get the version of the file from the server
         await download_file_with_retries(FILE_URL, LOCAL_FILE_PATH, retries=1, delay=0)
-        server_version = extract_version_from_line(LOCAL_FILE_PATH)
+        server_version = extract_version_from_file(LOCAL_FILE_PATH)
         
         if local_version == server_version:
             # If the versions match, notify that no update is needed
-            message = f"The local file version ({local_version}) is up to date. No update needed."
+            message = f"The local file version ({local_version}) is up to date. No update needed. ✅"
             if update.callback_query:  # Check if callback_query exists
                 await update.callback_query.message.reply_text(message)
             logger.info("No update needed. Version is up to date.")
@@ -327,7 +334,7 @@ async def start(update: Update, context: CallbackContext):
     logger.info("Bot received the /start command")
 
     # Get the local file version
-    local_version = extract_version_from_line(LOCAL_FILE_PATH)
+    local_version = extract_version_from_file(LOCAL_FILE_PATH)
     
     # Log the local file version
     logger.info(f"Local version: {local_version}")
