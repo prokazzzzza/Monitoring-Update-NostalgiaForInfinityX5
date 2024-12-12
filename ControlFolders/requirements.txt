@@ -1,0 +1,6 @@
+# requirements.txt
+# Файл со всеми зависимостями для работы приложения
+watchdog==3.0.0
+python-telegram-bot==20.3
+python-dotenv==1.0.0
+requests==2.32.2
