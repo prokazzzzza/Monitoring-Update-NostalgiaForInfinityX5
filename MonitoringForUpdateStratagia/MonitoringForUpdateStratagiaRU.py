@@ -1,3 +1,4 @@
+#MonitoringForUpdateStratagiaENG.py
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackContext, CallbackQueryHandler
 from datetime import datetime, timedelta
