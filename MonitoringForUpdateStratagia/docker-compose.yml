@@ -1,25 +1,22 @@
-#docker-compose.yml
 version: '3.8'
 
 services:
-  monitoringforupdate-nostalgiaforinfinityx5:
+  monitoring-bot:
     build:
-      context: .  # Указываем текущую директорию для сборки Docker-образа / Specify the current directory for building the Docker image
-      dockerfile: Dockerfile  # Используем Dockerfile в корне проекта / Use the Dockerfile located in the project root
+      context: .
+      dockerfile: Dockerfile
       args:
-        LANGUAGE: ${LANGUAGE}  # Передаем переменную LANGUAGE из .env файла / Pass the LANGUAGE variable from the .env file
-    container_name: monitoringforupdate-nostalgiaforinfinityx5-container  # Имя контейнера / Container name
-    restart: always  # Автоматически перезапускать контейнер при сбое / Automatically restart the container in case of a crash
+        LANGUAGE: ${LANGUAGE}
+    container_name: nostalgiaforinfinityx5-monitoring
+    restart: always
     env_file:
-      - .env  # Указываем файл с переменными окружения / Specify the file with environment variables
+      - .env
     volumes:
-      - ${LOCAL_VOLUME_PATH}:/app/Update  # Монтируем локальную директорию в контейнер / Mount a local directory to the container
-      - ./MonitoringForUpdateStratagiaRU.py:/app/MonitoringForUpdateStratagiaRU.py  # Добавляем скрипт на русском языке / Add the Russian script
-      - ./MonitoringForUpdateStratagiaENG.py:/app/MonitoringForUpdateStratagiaENG.py  # Добавляем скрипт на английском языке / Add the English script
+      - ${LOCAL_VOLUME_PATH}:/app/Update
     ports:
-      - "8000:8000"  # Пробрасываем порт 8000 (если требуется доступ извне) / Map port 8000 (if external access is required)
+      - "8000:8000"
     logging:
-      driver: "json-file"  # Используем JSON-драйвер для логирования / Use JSON driver for logging
+      driver: "json-file"
       options:
-        max-size: "10m"  # Максимальный размер одного файла лога / Maximum size of a single log file
-        max-file: "3"    # Ограничение количества файлов лога / Limit the number of log files
+        max-size: "10m"
+        max-file: "3"
