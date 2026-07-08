@@ -7,6 +7,7 @@ import requests
 import logging
 import aiohttp
 import asyncio
+import hashlib
 import pytz
 import re
 import os
@@ -30,10 +31,13 @@ RETRY_LIMIT = int(os.getenv("RETRY_LIMIT"))  # Лимит попыток при 
 RETRY_DELAY = int(os.getenv("RETRY_DELAY"))  # Задержка между попытками
 REPO_URL = os.getenv("REPO_URL")  # URL репозитория GitHub
 REMOTE_FILE_PATH = os.getenv("REMOTE_FILE_PATH")  # Путь к файлу в репозитории
+BLACKLIST_FILE_URL = os.getenv("BLACKLIST_FILE_URL")  # Опциональный URL для скачивания blacklist-файла
+BLACKLIST_LOCAL_FILE_PATH = os.getenv("BLACKLIST_LOCAL_FILE_PATH")  # Опциональный локальный путь blacklist-файла
+BLACKLIST_REMOTE_FILE_PATH = os.getenv("BLACKLIST_REMOTE_FILE_PATH")  # Опциональный путь blacklist-файла в репозитории
 TIMEZONE = os.getenv("TIMEZONE")  # Часовой пояс
 
 # Версия бота
-BOT_VERSION = "v1.15"
+BOT_VERSION = "v1.16"
 
 # Логирование входящих сообщений
 async def log_telegram_message(update: Update):
@@ -111,6 +115,49 @@ async def fetch_file_content(repo_url, file_path):
             logger.error(f"Ошибка при получении файла: {e}")
             return None
 
+def is_blacklist_configured():
+    """Возвращает True, если все опциональные пути обновления blacklist настроены."""
+    return all([BLACKLIST_FILE_URL, BLACKLIST_LOCAL_FILE_PATH, BLACKLIST_REMOTE_FILE_PATH])
+
+def content_digest(content):
+    """Создает короткий стабильный digest для файлов без версии в содержимом."""
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()[:12]
+
+async def remote_file_differs(remote_path, local_path):
+    """Сравнивает удаленный текстовый файл с локальным файлом по содержимому."""
+    remote_content = await fetch_file_content(REPO_URL, remote_path)
+    if remote_content is None:
+        return False, "download-error"
+
+    if not os.path.exists(local_path):
+        return True, "local-missing"
+
+    try:
+        with open(local_path, "r", encoding="utf-8") as file:
+            local_content = file.read()
+    except Exception as e:
+        logger.error(f"Ошибка чтения локального файла {local_path}: {e}")
+        return True, "local-read-error"
+
+    if local_content != remote_content:
+        return True, f"{content_digest(local_content)}->{content_digest(remote_content)}"
+    return False, content_digest(local_content)
+
+async def update_blacklist_if_needed(force=False):
+    """Скачивает опциональный blacklist-файл, если он настроен и изменился."""
+    if not is_blacklist_configured():
+        logger.info("Обновление blacklist не настроено.")
+        return False
+
+    differs, reason = await remote_file_differs(BLACKLIST_REMOTE_FILE_PATH, BLACKLIST_LOCAL_FILE_PATH)
+    if force or differs:
+        await download_file_with_retries(BLACKLIST_FILE_URL, BLACKLIST_LOCAL_FILE_PATH)
+        logger.info(f"Blacklist-файл загружен ({reason}).")
+        return True
+
+    logger.info(f"Blacklist-файл актуален ({reason}).")
+    return False
+
 # Извлекаем версию из содержимого локального файла
 def extract_version_from_file(file_path):
     """Проверяет содержимое файла на наличие версии."""
@@ -148,6 +195,7 @@ async def check_for_updates():
     """Проверяет наличие обновлений на удаленном сервере и скачивает файл, если обнаружено обновление."""
     local_version = extract_version_from_file(LOCAL_FILE_PATH)
     remote_version = await check_remote_version()
+    updated_files = []
 
     if remote_version == "Неизвестная версия":
         logger.warning("Удалённая версия неизвестна. Обновление не будет выполнено.")
@@ -164,11 +212,17 @@ async def check_for_updates():
         message = f"✅ Обновление обнаружено! Новая версия: {remote_version} успешно загружена.\n\n Перезапускаем Freqtrade..."
         send_telegram_message(TELEGRAM_TOKEN, CHAT_ID, message)
         logger.info(f"Обновление загружено. Локальная версия теперь: {remote_version}")
-
-        # После загрузки файла, перезапускаем Freqtrade
-        await reload_freqtrade(None, None)  # Здесь передаются пустые значения, если не требуется конкретное обновление через Telegram
+        updated_files.append("strategy")
     else:
         logger.info(f"Обновлений не обнаружено. Локальная версия: {local_version}")
+
+    if await update_blacklist_if_needed():
+        send_telegram_message(TELEGRAM_TOKEN, CHAT_ID, "✅ Обновление blacklist обнаружено и загружено.")
+        updated_files.append("blacklist")
+
+    if updated_files:
+        # После загрузки любого отслеживаемого файла перезапускаем Freqtrade один раз.
+        await reload_freqtrade(None, None)  # Здесь передаются пустые значения, если не требуется конкретное обновление через Telegram
 
 # Асинхронная задача для периодической проверки
 async def periodic_update_check():
@@ -307,6 +361,11 @@ async def download_file(update: Update, context: CallbackContext):
             if update.callback_query:  # Проверяем, существует ли callback_query
                 await update.callback_query.message.reply_text(message)
             logger.info("Новая версия успешно загружена.")
+
+        if await update_blacklist_if_needed(force=True):
+            message = "✅ Blacklist-файл успешно загружен!"
+            if update.callback_query:
+                await update.callback_query.message.reply_text(message)
     
     except Exception as e:
         logger.error(f"Ошибка при скачивании файла: {e}")
