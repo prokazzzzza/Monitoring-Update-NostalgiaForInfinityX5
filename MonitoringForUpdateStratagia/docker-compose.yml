@@ -1,20 +1,16 @@
 version: '3.8'
 
 services:
-  monitoring-bot:
+  monitoringforupdate-nostalgiaforinfinityx5:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        LANGUAGE: ${LANGUAGE}
-    container_name: nostalgiaforinfinityx5-monitoring
+    container_name: monitoringforupdate-nostalgiaforinfinityx5-container
     restart: always
     env_file:
       - .env
     volumes:
       - ${LOCAL_VOLUME_PATH}:/app/Update
-    ports:
-      - "8000:8000"
     logging:
       driver: "json-file"
       options:

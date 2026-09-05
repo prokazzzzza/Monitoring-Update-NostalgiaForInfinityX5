@@ -17,3 +17,11 @@ _Libraries/
 _ModuleInstall/
 MonitoringForUpdateStratagia/.env
 *.env
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+.venv/
+MonitoringForUpdateStratagia/Update/.monitoring-reload-pending.json
+MonitoringForUpdateStratagia/Update/.*.tmp

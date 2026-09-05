@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Запуск бота
-python main.py
+exec python main.py
