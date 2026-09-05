@@ -1,0 +1,14 @@
+.env
+.env.*
+*.env
+*.pem
+*.key
+.git
+__pycache__
+**/__pycache__
+*.pyc
+.pytest_cache
+.coverage
+.venv
+Update/.monitoring-reload-pending.json
+**/*.tmp

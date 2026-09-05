@@ -1,22 +1,18 @@
-#Dockerfile
-# Используем официальный образ Python как базовый / Use the official Python image as the base
-FROM python:3.9-slim
+FROM python:3.12-slim
 
-# Устанавливаем рабочую директорию внутри контейнера / Set the working directory inside the container
 WORKDIR /app
 
-# Копируем requirements.txt в контейнер / Copy requirements.txt into the container
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+
 COPY requirements.txt .
+RUN python -m pip install --no-cache-dir pip==26.2.1 \
+    && python -m pip install --no-cache-dir -r requirements.txt \
+    && python -m pip check
 
-# Устанавливаем зависимости / Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY app ./app
+COPY config ./config
+COPY main.py .
+COPY Update/NostalgiaForInfinityX5.py ./Update/NostalgiaForInfinityX5.py
 
-# Копируем все файлы проекта в рабочую директорию контейнера / Copy all project files into the container's working directory
-COPY . .
-
-# Копируем нужный скрипт в зависимости от переменной окружения LANGUAGE / Copy the required script based on the LANGUAGE environment variable
-ARG LANGUAGE
-COPY MonitoringForUpdateStratagia$LANGUAGE.py /app/MonitoringForUpdateStratagia.py
-
-# Команда для запуска бота / Command to run the bot
-CMD ["python", "MonitoringForUpdateStratagia.py"]
+# Запуск бота
+CMD ["python", "main.py"]
