@@ -573,3 +573,25 @@ def test_same_marker_basename_in_another_directory_does_not_collide(modules, mon
     monkeypatch.setattr(settings, "BLACKLIST_FILE_URL", "https://raw.githubusercontent.com/example/strategy/main/blacklist.json")
     monkeypatch.setattr(settings, "BLACKLIST_REMOTE_FILE_PATH", "blacklist.json")
     settings.validate_settings()
+
+
+@pytest.mark.parametrize("error_name", ["timeout", "connection", "payload"])
+def test_transport_failure_retries_and_preserves_file(modules, monkeypatch, offline, tmp_path, caplog, error_name):
+    strategy = modules["app.strategy"]
+    errors = {
+        "timeout": TimeoutError,
+        "connection": strategy.aiohttp.ClientConnectionError,
+        "payload": strategy.aiohttp.ClientPayloadError,
+    }
+    target = tmp_path / "target.py"
+    target.write_bytes(b"original")
+    error = errors[error_name]("synthetic-secret")
+    session, factory = fake_http(monkeypatch, strategy, [Response(error=error), Response(error=error)])
+    with pytest.raises(strategy.DownloadError, match="Download failed"):
+        offline.run_until_complete(strategy.download_file_with_retries(
+            modules["config.settings"].FILE_URL, target, retries=2, delay=0))
+    assert session.get.call_count == 2
+    assert target.read_bytes() == b"original"
+    assert factory.call_args.kwargs["trust_env"] is False
+    assert "synthetic-secret" not in caplog.text
+    session.__aexit__.assert_awaited_once()

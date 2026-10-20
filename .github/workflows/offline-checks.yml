@@ -36,8 +36,10 @@ jobs:
           PYTHON_DOTENV_DISABLED: '1'
           PYTHONDONTWRITEBYTECODE: '1'
         run: python -m pytest tests -q --cov=app --cov=config --cov=main --cov-report=term-missing --cov-fail-under=80
+      - name: Local HTTP transport regressions
+        run: python -m unittest discover -s tests_transport -v
       - name: Lint changed application and tests
-        run: python -m ruff check --select E4,E7,E9,F,I --no-cache MonitoringForUpdateStratagia/app MonitoringForUpdateStratagia/config MonitoringForUpdateStratagia/main.py tests
+        run: python -m ruff check --select E4,E7,E9,F,I --no-cache MonitoringForUpdateStratagia/app MonitoringForUpdateStratagia/config MonitoringForUpdateStratagia/main.py tests tests_transport
       - name: Audit full installed dependency closure
         run: python -m pip_audit --progress-spinner off
   container:
